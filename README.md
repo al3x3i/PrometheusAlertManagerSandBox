@@ -47,6 +47,7 @@ curl http://localhost:8080
 ### Express server endpoint
 check alert rules to fire alert, ex:  `expr: sum(add_bid_request_total) % 2 == 0`
 
+The alerts are grouped (see "alertmanager.yml"). To see new alert records the `namespace` value needs to be changed.
 ```bash
 curl -X POST -H "Content-Type: application/json" -d '{"host": "example.com", "path": "/example", "ingress_class": "example-ingress", "namespace": "ddd-namespace", "team": "example-team", "service": "example-service", "backend": "example-backend"}' http://localhost:3000/add-bid
 
