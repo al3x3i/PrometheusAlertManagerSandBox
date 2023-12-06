@@ -1,0 +1,16 @@
+global:
+  resolve_timeout: 5m
+
+route:
+  # group_by: ['alertname', 'severity']
+  group_by: [...] # No grouping, all alerts will be processed as a separate group
+  group_wait: 10s #  Alerts are grouped by the specified labels. In this case, alerts are grouped by
+  group_interval: 15s # Time to wait before grouping alerts into a single notification.
+  repeat_interval: 1h # Time to wait before sending a new notification for an already grouped alert
+  receiver: 'webhook-receiver'
+
+receivers:
+  - name: 'webhook-receiver'
+    webhook_configs:
+      - url: 'http://express:3000/alerts'
+        send_resolved: true

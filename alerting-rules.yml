@@ -1,0 +1,36 @@
+groups:
+  - name: nginx-alerts-demo
+    rules:
+      - alert: NginxAlertDemo
+        expr: nginx_connections_accepted > 3
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High request latency on {{ $labels.instance }}"
+          description: "{{ $labels.instance }} has a potential issues."
+      
+      - alert: BidEndpointDown
+        annotations:
+          message: 'http(s)://{{ $labels.host }}{{ $labels.path }} on {{ $labels.ingress_class }}'
+          priority: >-
+            {{- if $labels.namespace -}}
+              {{- if or (eq $labels.namespace "test-tools") (eq $labels.namespace "local-tools") (match "^(ddd-|sss-)" $labels.namespace) -}}
+                P3
+              {{- else -}}
+                P2
+              {{- end -}}
+            {{- else -}}
+              P3
+            {{- end -}}
+          team: '{{ if $labels.team }}{{ $labels.team }}{{ else }}Tron{{ end }}'
+          description_problem: >-
+            The endpoint <code>http(s):// {{- $labels.host -}} {{- $labels.path
+            -}} </code> is down.
+          description_impact: >-
+            HTTP requests to http(s)://{{ $labels.host }}{{ $labels.path }}
+
+          description_troubleshoot: >-
+            The endpoint is declared by Ingress ....
+        expr: sum without() (add_bid_request_total) % 2 == 0
+        for: 5s
